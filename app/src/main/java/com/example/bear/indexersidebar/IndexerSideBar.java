@@ -25,8 +25,14 @@ public class IndexerSideBar extends LinearLayout {
             };
     private static final int UNFOCUSED_INDEX = 0;
     private static final String FOCUSED_TEXT_COLOR = "#f09a37";
-    private static final String UNFOCUSED_TEXT_COLOR = "##999999";
+    private static final String UNFOCUSED_TEXT_COLOR = "#999999";
     private static final float TEXT_SCALE_FACTOR = 0.8f;
+
+    private float[] mBounds;
+    private int mFocusedChildIndex = UNFOCUSED_INDEX;
+    private int mOldHighLightChildIndex = 0;
+
+    private OnTouchIndexerListener mOnIndexerChangeListener;
 
     public IndexerSideBar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -54,8 +60,6 @@ public class IndexerSideBar extends LinearLayout {
         }
     }
 
-    private float[] mBounds;
-
     @Override
     protected void dispatchDraw(Canvas canvas) {
         if (mBounds == null) {
@@ -79,9 +83,6 @@ public class IndexerSideBar extends LinearLayout {
         return true;
     }
 
-    private int mFocusedChildIndex = UNFOCUSED_INDEX;
-    private int mOldHighLightChildIndex = 0;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final float y = event.getY();
@@ -90,11 +91,6 @@ public class IndexerSideBar extends LinearLayout {
                 mFocusedChildIndex = getFocusedChildIndex(y);
 
                 if (mFocusedChildIndex != UNFOCUSED_INDEX) {
-//                    if (mOldHighLightChildIndex != 0) {
-//                        ((TextView) getChildAt(mOldHighLightChildIndex)).setTextColor(Color.parseColor(UNFOCUSED_TEXT_COLOR));
-//                    }
-//                    ((TextView) getChildAt(mFocusedChildIndex)).setTextColor(Color.parseColor(FOCUSED_TEXT_COLOR));
-
                     if (mOnIndexerChangeListener != null) {
                         mOnIndexerChangeListener.onIndexerChange(INDEXERS[mFocusedChildIndex]);
                     }
@@ -113,8 +109,6 @@ public class IndexerSideBar extends LinearLayout {
                  */
                 int newFocusedChildIndex = getFocusedChildIndex(y);
                 if (newFocusedChildIndex != UNFOCUSED_INDEX && newFocusedChildIndex != mFocusedChildIndex) {
-//                    ((TextView) getChildAt(mFocusedChildIndex)).setTextColor(Color.parseColor(UNFOCUSED_TEXT_COLOR));
-//                    ((TextView) getChildAt(newFocusedChildIndex)).setTextColor(Color.parseColor(FOCUSED_TEXT_COLOR));
                     mFocusedChildIndex = newFocusedChildIndex;
 
                     if (mOnIndexerChangeListener != null) {
@@ -155,8 +149,6 @@ public class IndexerSideBar extends LinearLayout {
         float scaledDensity = getContext().getResources().getDisplayMetrics().scaledDensity;
         return (int) (px / scaledDensity + 0.5f);
     }
-
-    private OnTouchIndexerListener mOnIndexerChangeListener;
 
     public void setOnIndexerChangeListener(OnTouchIndexerListener listener) {
         mOnIndexerChangeListener = listener;
